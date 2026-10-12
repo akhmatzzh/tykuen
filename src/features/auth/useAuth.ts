@@ -16,10 +16,7 @@ export function useAuth() {
   })
 
   useEffect(() => {
-    if (!supabase) {
-      setState({ session: null, user: null, loading: false })
-      return
-    }
+    if (!supabase) return
 
     let active = true
 
