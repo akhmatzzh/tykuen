@@ -18,7 +18,7 @@ const settlements = [
   "Тырныауз",
   "Майский",
   "Терек",
-  "Черкесск"
+  "Кашхатау"
 ]
 
 function getAuthError(message: string) {
