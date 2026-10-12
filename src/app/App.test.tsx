@@ -1,6 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import { afterEach, describe, expect, it } from "vitest"
 import App from "./App"
+
+afterEach(cleanup)
 
 describe("App", () => {
   it("renders the Тыкуэн homepage", () => {
