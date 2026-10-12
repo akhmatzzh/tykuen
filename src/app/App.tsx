@@ -1,4 +1,7 @@
 import { useMemo, useState } from "react"
+import { AuthDialog } from "../features/auth/AuthDialog"
+import { useAuth } from "../features/auth/useAuth"
+import { supabase } from "../lib/supabase"
 
 type Category = "Все" | "Вещи" | "Отдам" | "Обмен" | "Услуги"
 
@@ -87,6 +90,9 @@ const listings: Listing[] = [
 function App() {
   const [activeCategory, setActiveCategory] = useState<Category>("Все")
   const [search, setSearch] = useState("")
+  const [authOpen, setAuthOpen] = useState(false)
+  const { user, loading } = useAuth()
+  const displayName = String(user?.user_metadata?.full_name ?? user?.email?.split("@")[0] ?? "")
 
   const visibleListings = useMemo(() => {
     const normalizedSearch = search.trim().toLocaleLowerCase("ru")
@@ -109,9 +115,15 @@ function App() {
           <a className="nav-link active" href="#listings">Объявления</a>
           <a className="nav-link" href="#how-it-works">Как это работает</a>
         </nav>
-        <button className="profile-button" type="button" onClick={() => window.alert("Авторизация появится на следующем этапе.")}>
-          <span className="profile-icon" aria-hidden="true">↗</span>
-          <span>Войти</span>
+        <button className="profile-button" type="button" disabled={loading} onClick={() => {
+          if (user) {
+            void supabase?.auth.signOut()
+          } else {
+            setAuthOpen(true)
+          }
+        }}>
+          <span className="profile-icon" aria-hidden="true">{user ? displayName.slice(0, 1).toLocaleUpperCase("ru") : "↗"}</span>
+          <span>{loading ? "Загрузка…" : user ? "Выйти" : "Войти"}</span>
         </button>
       </header>
 
@@ -220,6 +232,7 @@ function App() {
         <span>Сделано для соседей в Кабардино-Балкарии</span>
         <span>© Тыкуэн 2026</span>
       </footer>
+      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} onAuthenticated={() => setAuthOpen(false)} />
     </div>
   )
 }
