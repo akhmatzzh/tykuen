@@ -1,6 +1,15 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react"
-import { afterEach, describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import App from "./App"
+
+vi.mock("../features/auth/useAuth", () => ({
+  useAuth: () => ({ session: null, user: null, loading: false }),
+}))
+
+vi.mock("../lib/supabase", () => ({
+  isSupabaseConfigured: false,
+  supabase: null,
+}))
 
 afterEach(cleanup)
 
@@ -21,6 +30,8 @@ describe("App", () => {
   it("explains how to configure Supabase when credentials are missing", () => {
     render(<App />)
     fireEvent.click(screen.getByRole("button", { name: /войти/i }))
-    expect(screen.getByRole("status")).toHaveTextContent(/подключи Supabase/i)
+    expect(screen.getByRole("status")).toHaveTextContent(
+      /VITE_SUPABASE_URL.*VITE_SUPABASE_ANON_KEY.*\.env\.local/i,
+    )
   })
 })
